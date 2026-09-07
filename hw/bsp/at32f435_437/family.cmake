@@ -14,6 +14,26 @@ set(CMAKE_TOOLCHAIN_FILE ${TOP}/examples/build_system/cmake/toolchain/arm_${TOOL
 
 set(FAMILY_MCUS ${AT32_FAMILY_UPPER} CACHE INTERNAL "")
 
+# Both OTG cores are full speed. Default keeps device on OTG2 (PB14/PB15, CN3 on
+# AT-START) and host on OTG1 (PA11/PA12, CN2). Pass -DRHPORT_DEVICE=0 to put the
+# device on OTG1.
+if (NOT DEFINED RHPORT_DEVICE)
+  set(RHPORT_DEVICE 1)
+endif ()
+if (NOT DEFINED RHPORT_HOST)
+  set(RHPORT_HOST 0)
+endif ()
+
+if (NOT DEFINED RHPORT_SPEED)
+  set(RHPORT_SPEED OPT_MODE_FULL_SPEED OPT_MODE_FULL_SPEED)
+endif ()
+if (NOT DEFINED RHPORT_DEVICE_SPEED)
+  list(GET RHPORT_SPEED ${RHPORT_DEVICE} RHPORT_DEVICE_SPEED)
+endif ()
+if (NOT DEFINED RHPORT_HOST_SPEED)
+  list(GET RHPORT_SPEED ${RHPORT_HOST} RHPORT_HOST_SPEED)
+endif ()
+
 #------------------------------------
 # Startup & Linker script
 #------------------------------------
@@ -46,10 +66,10 @@ function(family_add_board BOARD_TARGET)
     ${AT32_SDK_LIB}/drivers/inc
     )
   target_compile_definitions(${BOARD_TARGET} PUBLIC
-    BOARD_TUD_RHPORT=1
-    BOARD_TUH_RHPORT=0
-    BOARD_TUD_MAX_SPEED=OPT_MODE_FULL_SPEED
-    BOARD_TUH_MAX_SPEED=OPT_MODE_FULL_SPEED
+    BOARD_TUD_RHPORT=${RHPORT_DEVICE}
+    BOARD_TUD_MAX_SPEED=${RHPORT_DEVICE_SPEED}
+    BOARD_TUH_RHPORT=${RHPORT_HOST}
+    BOARD_TUH_MAX_SPEED=${RHPORT_HOST_SPEED}
     )
 
   update_board(${BOARD_TARGET})
