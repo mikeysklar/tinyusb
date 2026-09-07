@@ -8,12 +8,35 @@ CPU_CORE ?= cortex-m4
 CFLAGS += \
   -flto
 
+# Both OTG cores are full speed. Default keeps device on OTG2 (PB14/PB15, CN3 on
+# AT-START) and host on OTG1 (PA11/PA12, CN2). Override with RHPORT_DEVICE=0 to
+# put the device on OTG1.
+RHPORT_SPEED ?= OPT_MODE_FULL_SPEED OPT_MODE_FULL_SPEED
+RHPORT_DEVICE ?= 1
+RHPORT_HOST ?= 0
+
+ifndef RHPORT_DEVICE_SPEED
+ifeq ($(RHPORT_DEVICE), 0)
+  RHPORT_DEVICE_SPEED = $(firstword $(RHPORT_SPEED))
+else
+  RHPORT_DEVICE_SPEED = $(lastword $(RHPORT_SPEED))
+endif
+endif
+
+ifndef RHPORT_HOST_SPEED
+ifeq ($(RHPORT_HOST), 0)
+  RHPORT_HOST_SPEED = $(firstword $(RHPORT_SPEED))
+else
+  RHPORT_HOST_SPEED = $(lastword $(RHPORT_SPEED))
+endif
+endif
+
 CFLAGS += \
 	-DCFG_TUSB_MCU=OPT_MCU_AT32F435_437 \
-	-DBOARD_TUD_RHPORT=1 \
-	-DBOARD_TUH_RHPORT=0 \
-	-DBOARD_TUD_MAX_SPEED=OPT_MODE_FULL_SPEED \
-	-DBOARD_TUH_MAX_SPEED=OPT_MODE_FULL_SPEED \
+	-DBOARD_TUD_RHPORT=${RHPORT_DEVICE} \
+	-DBOARD_TUD_MAX_SPEED=${RHPORT_DEVICE_SPEED} \
+	-DBOARD_TUH_RHPORT=${RHPORT_HOST} \
+	-DBOARD_TUH_MAX_SPEED=${RHPORT_HOST_SPEED} \
 
 LDFLAGS += \
 	-flto --specs=nosys.specs -nostdlib -nostartfiles
