@@ -34,4 +34,6 @@ SRC_S += ${AT32_SDK_LIB}/cmsis/cm4/device_support/startup/gcc/startup_${AT32_FAM
 
 LD_FILE ?= ${AT32_SDK_LIB}/cmsis/cm4/device_support/startup/gcc/linker/${MCU_LINKER_NAME}_FLASH.ld
 
-flash: flash-atlink
+# AT-Link-EZ on AT-START boards enumerates as CMSIS-DAP, which probe-rs
+# drives directly. flash-atlink was never defined anywhere in the tree.
+flash: flash-probe-rs

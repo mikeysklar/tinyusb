@@ -37,4 +37,6 @@ LD_FILE ?= ${AT32_SDK_LIB}/cmsis/cm4/device_support/startup/gcc/linker/${MCU_LIN
 # For freeRTOS port source
 FREERTOS_PORTABLE_SRC = $(FREERTOS_PORTABLE_PATH)/ARM_CM4F
 
-flash: flash-atlink
+# AT-Link-EZ on AT-START boards enumerates as CMSIS-DAP, which probe-rs
+# drives directly. flash-atlink was never defined anywhere in the tree.
+flash: flash-probe-rs
