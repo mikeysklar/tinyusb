@@ -40,4 +40,6 @@ SRC_S += ${AT32_SDK_LIB}/cmsis/cm4/device_support/startup/gcc/startup_${AT32_FAM
 
 LD_FILE ?= ${AT32_SDK_LIB}/cmsis/cm4/device_support/startup/gcc/linker/${MCU_LINKER_NAME}_FLASH.ld
 
-flash: flash-atlink
+# AT-Link-EZ on AT-START boards enumerates as CMSIS-DAP, so probe-rs and the
+# ArteryTek OpenOCD fork (https://github.com/ArteryTek/openocd) both work.
+flash: flash-probe-rs
